@@ -1,8 +1,29 @@
 {
-  "ATH-001": {
+  "ATH-1": {
     "other": "You are not logged in"
   },
-  "SRV-001": {
+  "RDT-1": {
+    "other": "Something went wrong"
+  },
+  "RDT-2": {
+    "other": "Username not provided"
+  },
+  "RDT-3": {
+    "other": "Password not provided"
+  },
+  "RDT-4": {
+    "other": "Invalid username"
+  },
+  "RDT-5": {
+    "other": "Invalid password"
+  },
+  "CFL-1": {
+    "other": "Username already taken"
+  },
+  "DTB-1": {
+    "other": "Something went wrong"
+  },
+  "SRV-1": {
     "other": "Something went wrong"
   }
 }

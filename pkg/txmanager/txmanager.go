@@ -28,6 +28,7 @@ func (m *TxManager) Transaction(ctx context.Context, f func(context.Context, *sq
 		if errRollback != nil {
 			return fmt.Errorf("failed to rollback transaction: %w on error: %w", errRollback, err)
 		}
+		return err
 	}
 
 	errCommit := tx.Commit()

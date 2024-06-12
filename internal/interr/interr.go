@@ -23,30 +23,104 @@ func NewErrorStorage(localizer *loclzr.Localizer) *ErrorStorage {
 }
 
 var (
-	Unauthorized = errors.New("unauthorized")
+	EmptyAccessToken = errors.New("empty access token")
 
-	InternalServer = errors.New("internal server error")
+	FailedToDecodeRequestBody = errors.New("failed to decode request body")
+	NotProvidedUsername       = errors.New("not provided username")
+	NotProvidedPassword       = errors.New("not provided password")
+	InvalidUsername           = errors.New("invalid username")
+	InvalidPassword           = errors.New("invalid password")
+
+	UsernameAlreadyTaken = errors.New("username already taken")
+
+	DatabaseFailedToExecuteQuery = errors.New("failed to execute query")
+
+	Unexpected = errors.New("unexpected error")
 )
 
 var (
-	ErrEmptyAccessToken = internalError{
-		Error:          Unauthorized,
-		InternalCode:   "ATH-001",
+	errEmptyAccessToken = internalError{
+		Error:          EmptyAccessToken,
+		InternalCode:   "ATH-1",
 		HTTPStatusCode: http.StatusUnauthorized,
 	}
-	ErrUnexpectedError = internalError{
-		Error:          InternalServer,
-		InternalCode:   "SRV-001",
-		HTTPStatusCode: http.StatusUnauthorized,
+
+	errFailedToDecodeRequestBody = internalError{
+		Error:          FailedToDecodeRequestBody,
+		InternalCode:   "RDT-1",
+		HTTPStatusCode: http.StatusBadRequest,
+	}
+
+	errNotProvidedUsername = internalError{
+		Error:          NotProvidedUsername,
+		InternalCode:   "RDT-2",
+		HTTPStatusCode: http.StatusBadRequest,
+	}
+	errNotProvidedPassword = internalError{
+		Error:          NotProvidedPassword,
+		InternalCode:   "RDT-3",
+		HTTPStatusCode: http.StatusBadRequest,
+	}
+
+	errInvalidUsername = internalError{
+		Error:          InvalidUsername,
+		InternalCode:   "RDT-4",
+		HTTPStatusCode: http.StatusBadRequest,
+	}
+	errInvalidPassword = internalError{
+		Error:          InvalidPassword,
+		InternalCode:   "RDT-5",
+		HTTPStatusCode: http.StatusBadRequest,
+	}
+
+	errUsernameAlreadyTaken = internalError{
+		Error:          UsernameAlreadyTaken,
+		InternalCode:   "CFL-1",
+		HTTPStatusCode: http.StatusBadRequest,
+	}
+
+	errDatabaseFailedToExecuteQuery = internalError{
+		Error:          DatabaseFailedToExecuteQuery,
+		InternalCode:   "DTB-1",
+		HTTPStatusCode: http.StatusInternalServerError,
+	}
+
+	errUnexpectedError = internalError{
+		Error:          Unexpected,
+		InternalCode:   "SRV-1",
+		HTTPStatusCode: http.StatusInternalServerError,
 	}
 )
 
 func (e *ErrorStorage) getInternalError(err error) internalError {
 	switch {
-	case errors.Is(err, ErrEmptyAccessToken.Error):
-		return ErrEmptyAccessToken
+	case errors.Is(err, errEmptyAccessToken.Error):
+		return errEmptyAccessToken
+
+	case errors.Is(err, errFailedToDecodeRequestBody.Error):
+		return errFailedToDecodeRequestBody
+
+	case errors.Is(err, errNotProvidedUsername.Error):
+		return errNotProvidedUsername
+	case errors.Is(err, errNotProvidedPassword.Error):
+		return errNotProvidedPassword
+
+	case errors.Is(err, errInvalidUsername.Error):
+		return errInvalidUsername
+	case errors.Is(err, errInvalidPassword.Error):
+		return errInvalidPassword
+
+	case errors.Is(err, errUsernameAlreadyTaken.Error):
+		return errUsernameAlreadyTaken
+
+	case errors.Is(err, errDatabaseFailedToExecuteQuery.Error):
+		return errDatabaseFailedToExecuteQuery
+
+	case errors.Is(err, errUnexpectedError.Error):
+		return errUnexpectedError
+
 	default:
-		return ErrUnexpectedError
+		return errUnexpectedError
 	}
 }
 
