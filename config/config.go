@@ -7,16 +7,23 @@ import (
 )
 
 type Config struct {
-	App    *AppConfig    `group:"App args" namespace:"app" env-namespace:"APP"`
-	Logger *LoggerConfig `group:"Logger args" namespace:"logger" env-namespace:"LOGGER"`
-	DB     *DBConfig     `group:"Db args" namespace:"database" env-namespace:"DATABASE"`
-	HTTP   *HTTPConfig   `group:"Http args" namespace:"http" env-namespace:"HTTP"`
+	App    *AppConfig    `group:"App args" namespace:"app" env-namespace:"APP" required:"true"`
+	Logger *LoggerConfig `group:"Logger args" namespace:"logger" env-namespace:"LOGGER" required:"true"`
+	DB     *DBConfig     `group:"Db args" namespace:"database" env-namespace:"DATABASE" required:"true"`
+	HTTP   *HTTPConfig   `group:"Http args" namespace:"http" env-namespace:"HTTP" required:"true"`
 }
 
 type AppConfig struct {
 	Name                string `long:"name" env:"NAME" default:"authentication"`
-	Environment         string `long:"environment" env:"ENVIRONMENT"`
+	Environment         string `long:"environment" env:"ENVIRONMENT" default:"local"`
+	RefreshToken        *Token `group:"Refresh token args" namespace:"refresh-token" env-namespace:"REFRESH_TOKEN" required:"true"`
+	AccessToken         *Token `group:"Access token args" namespace:"access-token" env-namespace:"ACCESS_TOKEN" required:"true"`
 	environmentInternal environment.Environment
+}
+
+type Token struct {
+	SecretKey      string `long:"secret-key" env:"SECRET_KEY" required:"true"`
+	DurationSecond int    `long:"duration" env:"DURATION" required:"true"`
 }
 
 type LoggerConfig struct {
@@ -24,17 +31,17 @@ type LoggerConfig struct {
 }
 
 type DBConfig struct {
-	Host          string `long:"host" env:"HOST"`
-	Port          int    `long:"port" env:"PORT"`
-	Name          string `long:"name" env:"NAME"`
-	User          string `long:"user" env:"USER"`
-	Password      string `long:"password" env:"PASSWORD"`
+	Host          string `long:"host" env:"HOST" required:"true"`
+	Port          int    `long:"port" env:"PORT" required:"true"`
+	Name          string `long:"name" env:"NAME" required:"true"`
+	User          string `long:"user" env:"USER" required:"true"`
+	Password      string `long:"password" env:"PASSWORD" required:"true"`
 	MigrationPath string `long:"migration-path" env:"MIGRATION_PATH" default:"internal/infrastructure/database/postgres/migration"`
 }
 
 type HTTPConfig struct {
-	Host string `long:"host" env:"HOST"`
-	Port string `long:"port" env:"PORT"`
+	Host string `long:"host" env:"HOST" required:"true"`
+	Port string `long:"port" env:"PORT" required:"true"`
 }
 
 func Parse() (*Config, error) {
