@@ -33,12 +33,18 @@ func main() {
 		panic(err)
 	}
 
-	app := app.New(cfg, log)
+	application := app.New(cfg, log)
+	defer func(application *app.App) {
+		err := application.Close()
+		if err != nil {
+			log.Warn().Err(err).Msg("Failed to close application")
+		}
+	}(application)
 
 	writer := httpresp.NewWriter()
 
 	controllerHealthCheck := controllerhealth.New(writer, log)
-	controllerV1 := controllerv1.New(app, writer, log)
+	controllerV1 := controllerv1.New(application, writer, log)
 
 	chiMux := chimux.New()
 
