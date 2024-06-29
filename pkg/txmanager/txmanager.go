@@ -22,13 +22,13 @@ func (m *TxManager) Transaction(ctx context.Context, f func(context.Context, *sq
 		return fmt.Errorf("failed to begin transaction: %w", errBegin)
 	}
 
-	err := f(ctx, tx)
-	if err != nil {
+	errFunction := f(ctx, tx)
+	if errFunction != nil {
 		errRollback := tx.Rollback()
 		if errRollback != nil {
-			return fmt.Errorf("failed to rollback transaction: %w on error: %w", errRollback, err)
+			return fmt.Errorf("failed to rollback transaction: %w on error: %w", errRollback, errFunction)
 		}
-		return err
+		return errFunction
 	}
 
 	errCommit := tx.Commit()

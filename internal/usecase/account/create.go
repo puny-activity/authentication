@@ -3,16 +3,23 @@ package account
 import (
 	"context"
 	"github.com/golang-module/carbon"
+	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
-	"github.com/puny-activity/authentication/internal/entity"
-	"github.com/puny-activity/authentication/internal/interr"
+	"github.com/puny-activity/authentication/internal/entity/account"
+	"github.com/puny-activity/authentication/internal/entity/role"
+	"github.com/puny-activity/authentication/internal/errs"
 	"github.com/puny-activity/authentication/pkg/werr"
 )
 
-func (u *UseCase) SignUp(ctx context.Context, account entity.AccountCreateRequest) error {
+func (u *UseCase) SignUp(ctx context.Context, account account.ToCreate) error {
+	accountID := uuid.New()
+	account.ID = &accountID
+	account.Nickname = account.Username
+	account.CreatedAt = carbon.Now()
+
 	err := account.Validate()
 	if err != nil {
-		return err
+		return werr.WrapSE("failed to validate account", err)
 	}
 
 	err = u.txManager.Transaction(ctx, func(ctx context.Context, tx *sqlx.Tx) error {
@@ -21,7 +28,7 @@ func (u *UseCase) SignUp(ctx context.Context, account entity.AccountCreateReques
 			return werr.WrapSE("failed to check if username taken", err)
 		}
 		if isUsernameTaken {
-			return interr.UsernameAlreadyTaken
+			return errs.UsernameAlreadyTaken
 		}
 
 		accountWithHashedPassword, err := account.HashPassword()
@@ -29,8 +36,6 @@ func (u *UseCase) SignUp(ctx context.Context, account entity.AccountCreateReques
 			return werr.WrapSE("failed to hash password", err)
 		}
 
-		accountWithHashedPassword.GenerateID()
-		accountWithHashedPassword.CreatedAt = carbon.Now()
 		err = u.accountRepo.CreateTx(ctx, tx, accountWithHashedPassword)
 		if err != nil {
 			return werr.WrapSE("failed to create account", err)
@@ -41,13 +46,13 @@ func (u *UseCase) SignUp(ctx context.Context, account entity.AccountCreateReques
 			return werr.WrapSE("failed to count accounts", err)
 		}
 		if accountsCount == 1 {
-			err = u.roleRepo.AssignTx(ctx, tx, *accountWithHashedPassword.ID, entity.RoleAdmin)
+			err = u.roleRepo.AssignTx(ctx, tx, *accountWithHashedPassword.ID, role.Admin)
 			if err != nil {
 				return werr.WrapSE("failed to assign admin role", err)
 			}
 		}
 
-		err = u.roleRepo.AssignTx(ctx, tx, *accountWithHashedPassword.ID, entity.RoleUser)
+		err = u.roleRepo.AssignTx(ctx, tx, *accountWithHashedPassword.ID, role.User)
 		if err != nil {
 			return werr.WrapSE("failed to assign user role", err)
 		}

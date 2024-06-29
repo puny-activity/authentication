@@ -14,14 +14,14 @@ func New() *chi.Mux {
 	r.Use(middleware.Recoverer)
 	r.Use(middleware.URLFormat)
 
-	cors := cors.New(cors.Options{
+	newCors := cors.New(cors.Options{
 		AllowedOrigins:   []string{"*"},
 		AllowedMethods:   []string{"GET", "POST", "PATCH", "PUT", "DELETE", "OPTIONS"},
 		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
 		AllowCredentials: true,
 		Debug:            false,
 	})
-	r.Use(cors.Handler)
+	r.Use(newCors.Handler)
 
 	return r
 }

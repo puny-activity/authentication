@@ -5,7 +5,7 @@ import (
 	accountrepo "github.com/puny-activity/authentication/internal/infrastructure/database/postgres/repository/account"
 	rolerepo "github.com/puny-activity/authentication/internal/infrastructure/database/postgres/repository/role"
 	accountuc "github.com/puny-activity/authentication/internal/usecase/account"
-	"github.com/puny-activity/authentication/pkg/pstgrs"
+	"github.com/puny-activity/authentication/pkg/database"
 	"github.com/puny-activity/authentication/pkg/txmanager"
 	"github.com/puny-activity/authentication/pkg/werr"
 	"github.com/rs/zerolog"
@@ -13,12 +13,16 @@ import (
 
 type App struct {
 	AccountUseCase *accountuc.UseCase
-	db             *pstgrs.Postgres
+	db             *database.Database
 	log            *zerolog.Logger
 }
 
 func New(cfg config.Config, log *zerolog.Logger) *App {
-	db, err := pstgrs.New(cfg)
+	db, err := database.New(cfg)
+	if err != nil {
+		panic(err)
+	}
+	err = db.RunMigrations()
 	if err != nil {
 		panic(err)
 	}

@@ -2,8 +2,8 @@ package router
 
 import (
 	"github.com/go-chi/chi/v5"
+	"github.com/puny-activity/authentication/api/http/main/controller"
 	"github.com/puny-activity/authentication/api/http/middleware"
-	"github.com/puny-activity/authentication/api/http/v1/controller"
 	"github.com/puny-activity/authentication/config"
 	"github.com/puny-activity/authentication/pkg/httpresp"
 	"github.com/rs/zerolog"
@@ -31,11 +31,11 @@ func New(cfg *config.Config, router *chi.Mux, middleware *middleware.Middleware,
 }
 
 func (r *Router) Setup() {
-	r.router.Route("/v1", func(router chi.Router) {
+	r.router.Group(func(router chi.Router) {
 		router.Use(r.middleware.AcceptLanguageMiddleware)
 
 		router.Route("/accounts", func(router chi.Router) {
-			router.Post("/sign-up", r.wrapper.Wrap(r.controller.SignUp))
+			router.Post("/sign-up", r.wrapper.WrapAnonymous(r.controller.SignUp))
 		})
 	})
 }

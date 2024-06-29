@@ -31,9 +31,9 @@ func New(cfg *config.Config, router *chi.Mux, middleware *middleware.Middleware,
 }
 
 func (r *Router) Setup() {
-	r.router.Route("/health-check", func(router chi.Router) {
+	r.router.Group(func(router chi.Router) {
 		router.Use(r.middleware.AcceptLanguageMiddleware)
 
-		router.Get("/", r.wrapper.Wrap(r.controller.HealthCheck))
+		router.Get("/health-check", r.wrapper.WrapWithoutLog(r.controller.HealthCheck))
 	})
 }

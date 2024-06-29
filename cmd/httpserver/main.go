@@ -5,12 +5,13 @@ import (
 	"github.com/nicksnyder/go-i18n/v2/i18n"
 	controllerhealth "github.com/puny-activity/authentication/api/http/healthcheck/controller"
 	routerhealth "github.com/puny-activity/authentication/api/http/healthcheck/router"
+	"github.com/puny-activity/authentication/api/http/main/controller"
+	"github.com/puny-activity/authentication/api/http/main/router"
 	"github.com/puny-activity/authentication/api/http/middleware"
-	controllerv1 "github.com/puny-activity/authentication/api/http/v1/controller"
-	routerv1 "github.com/puny-activity/authentication/api/http/v1/router"
 	"github.com/puny-activity/authentication/config"
 	"github.com/puny-activity/authentication/internal/app"
-	"github.com/puny-activity/authentication/internal/interr"
+	"github.com/puny-activity/authentication/internal/errs"
+	"github.com/puny-activity/authentication/internal/locale"
 	"github.com/puny-activity/authentication/pkg/chimux"
 	"github.com/puny-activity/authentication/pkg/httpresp"
 	"github.com/puny-activity/authentication/pkg/httpsrvr"
@@ -44,28 +45,32 @@ func main() {
 	writer := httpresp.NewWriter()
 
 	controllerHealthCheck := controllerhealth.New(writer, log)
-	controllerV1 := controllerv1.New(application, writer, log)
+	controllerMain := controller.New(application, writer, log)
 
 	chiMux := chimux.New()
 
-	middleware := middleware.New(log)
+	middlewares := middleware.New(log)
 
 	bundle := i18n.NewBundle(language.English)
 	bundle.RegisterUnmarshalFunc("toml", json.Unmarshal)
-	bundle.LoadMessageFile("internal/locale/en-US.json")
-	bundle.LoadMessageFile("internal/locale/ru-RU.json")
+	for _, lang := range locale.Languages {
+		_, err := bundle.LoadMessageFile("internal/locale/" + lang.String() + ".json")
+		if err != nil {
+			log.Warn().Err(err).Msg("Failed to load locale file")
+		}
+	}
 
-	localizer := loclzr.New(bundle)
+	localizer := loclzr.New(bundle, locale.Languages)
 
-	errorStorage := interr.NewErrorStorage(localizer)
+	errorStorage := errs.NewStorage(localizer)
 
 	wrapper := httpresp.NewWrapper(writer, errorStorage, log)
 
-	routerHealthCheck := routerhealth.New(cfg, chiMux, middleware, wrapper, controllerHealthCheck, log)
-	routerV1 := routerv1.New(cfg, chiMux, middleware, wrapper, controllerV1, log)
+	routerHealthCheck := routerhealth.New(cfg, chiMux, middlewares, wrapper, controllerHealthCheck, log)
+	routerMain := router.New(cfg, chiMux, middlewares, wrapper, controllerMain, log)
 
 	routerHealthCheck.Setup()
-	routerV1.Setup()
+	routerMain.Setup()
 
 	httpServer := httpsrvr.New(
 		chiMux,

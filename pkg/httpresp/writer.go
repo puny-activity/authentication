@@ -3,6 +3,7 @@ package httpresp
 import (
 	"encoding/json"
 	"errors"
+	"github.com/puny-activity/authentication/pkg/base/headerbase"
 	"net/http"
 )
 
@@ -14,7 +15,7 @@ func NewWriter() *Writer {
 }
 
 func (w *Writer) Write(writer http.ResponseWriter, statusCode int, payload any) error {
-	writer.Header().Set("Content-Type", "application/json")
+	writer.Header().Set(headerbase.ContentType, "application/json")
 
 	writer.WriteHeader(statusCode)
 

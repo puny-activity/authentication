@@ -1,6 +1,7 @@
 package config
 
 type Config interface {
-	GetConnectionString() string
-	GetMigrationsPath() string
+	Database() string
+	ConnectionString() string
+	MigrationsPath() string
 }

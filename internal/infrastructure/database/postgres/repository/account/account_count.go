@@ -3,7 +3,7 @@ package account
 import (
 	"context"
 	"github.com/jmoiron/sqlx"
-	"github.com/puny-activity/authentication/internal/interr"
+	"github.com/puny-activity/authentication/internal/errs"
 	"github.com/puny-activity/authentication/pkg/queryer"
 	"github.com/puny-activity/authentication/pkg/werr"
 )
@@ -26,7 +26,7 @@ FROM accounts
 
 	err := queryer.GetContext(ctx, &count, query)
 	if err != nil {
-		return 0, werr.WrapEE(interr.DatabaseFailedToExecuteQuery, err)
+		return 0, werr.WrapES(errs.DatabaseFailedToExecuteQuery, err.Error())
 	}
 
 	return count, nil

@@ -3,7 +3,8 @@ package config
 import (
 	"fmt"
 	"github.com/jessevdk/go-flags"
-	"github.com/puny-activity/authentication/pkg/environment"
+	"github.com/puny-activity/authentication/pkg/base/environment"
+	"github.com/puny-activity/authentication/pkg/werr"
 )
 
 type Config struct {
@@ -31,6 +32,7 @@ type LoggerConfig struct {
 }
 
 type DBConfig struct {
+	DatabaseName  string `long:"database" env:"DATABASE" required:"true"`
 	Host          string `long:"host" env:"HOST" required:"true"`
 	Port          int    `long:"port" env:"PORT" required:"true"`
 	Name          string `long:"name" env:"NAME" required:"true"`
@@ -53,18 +55,30 @@ func Parse() (*Config, error) {
 		return nil, err
 	}
 
-	config.App.environmentInternal = environment.New(config.App.Environment)
+	config.App.environmentInternal, err = environment.New(config.App.Environment)
+	if err != nil {
+		return nil, werr.WrapSE("failed to parse environment", err)
+	}
 
 	return &config, nil
 }
 
-func (c *Config) GetConnectionString() string {
-	return fmt.Sprintf(
-		"host=%s port=%d user=%s dbname=%s password=%s sslmode=disable default_query_exec_mode=cache_describe",
-		c.DB.Host, c.DB.Port, c.DB.User, c.DB.Name, c.DB.Password)
+func (c *Config) Database() string {
+	return c.DB.DatabaseName
 }
 
-func (c *Config) GetMigrationsPath() string {
+func (c *Config) ConnectionString() string {
+	switch c.DB.DatabaseName {
+	case "postgres":
+		return fmt.Sprintf(
+			"host=%s port=%d user=%s dbname=%s password=%s sslmode=disable default_query_exec_mode=cache_describe",
+			c.DB.Host, c.DB.Port, c.DB.User, c.DB.Name, c.DB.Password)
+	default:
+		return ""
+	}
+}
+
+func (c *Config) MigrationsPath() string {
 	return c.DB.MigrationPath
 }
 

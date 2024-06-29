@@ -4,6 +4,7 @@ CREATE TABLE accounts
 (
     id              UUID PRIMARY KEY,
     username        TEXT UNIQUE NOT NULL,
+    nickname        TEXT        NOT NULL,
     hashed_password TEXT        NOT NULL,
     created_at      TIMESTAMPTZ NOT NULL,
     last_online     TIMESTAMPTZ

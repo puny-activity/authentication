@@ -17,6 +17,12 @@
   "RDT-5": {
     "other": "Invalid password"
   },
+  "RDT-6": {
+    "other": "Invalid nickname"
+  },
+  "RDT-7": {
+    "other": "Something went wrong"
+  },
   "CFL-1": {
     "other": "Username already taken"
   },
@@ -25,5 +31,15 @@
   },
   "SRV-1": {
     "other": "Something went wrong"
+  },
+  "ENT-1": {
+    "other": "Something went wrong"
+  },
+
+  "RoleAdmin": {
+    "other": "Admin"
+  },
+  "RoleUser": {
+    "other": "User"
   }
 }
