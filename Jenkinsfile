@@ -1,69 +1,21 @@
 pipeline {
-
-    agent {
-        node {
-            label 'master'
-        }
-    }
-
-    options {
-        buildDiscarder logRotator(
-                    daysToKeepStr: '16',
-                    numToKeepStr: '10'
-            )
-    }
+    agent any
 
     stages {
-
-        stage('Cleanup Workspace') {
+        stage('Сборка') {
             steps {
-                cleanWs()
-                sh """
-                echo "Cleaned Up Workspace For Project"
-                """
+                echo 'Выполняем команды для сборки'
             }
         }
-
-        stage('Code Checkout') {
+        stage('Тестирование') {
             steps {
-                checkout([
-                    $class: 'GitSCM',
-                    branches: [[name: '*/dev']],
-                    userRemoteConfigs: [[url: 'https://github.com/puny-activity/authorization']]
-                ])
+                echo 'Тестируем нашу сборку'
             }
         }
-
-        stage(' Unit Testing') {
+        stage('Развертывание') {
             steps {
-                sh """
-                echo "Running Unit Tests"
-                """
+                echo 'Переносим код в рабочую среду или создаем артефакт'
             }
         }
-
-        stage('Code Analysis') {
-            steps {
-                sh """
-                echo "Running Code Analysis"
-                """
-            }
-        }
-
-        stage('Build Deploy Code') {
-            when {
-                branch 'dev'
-            }
-            steps {
-                sh """
-                echo "Building Artifact"
-                """
-
-                sh """
-                echo "Deploying Code"
-                """
-            }
-        }
-
     }
 }
