@@ -8,25 +8,25 @@ import (
 	"github.com/puny-activity/authentication/pkg/werr"
 )
 
-func (r Repository) IsNicknameTaken(ctx context.Context, nickname string) (bool, error) {
-	return r.isNicknameTaken(ctx, r.db, nickname)
+func (r Repository) IsEmailTaken(ctx context.Context, email string) (bool, error) {
+	return r.isEmailTaken(ctx, r.db, email)
 }
 
-func (r Repository) IsNicknameTakenTx(ctx context.Context, tx *sqlx.Tx, nickname string) (bool, error) {
-	return r.isNicknameTaken(ctx, tx, nickname)
+func (r Repository) IsEmailTakenTx(ctx context.Context, tx *sqlx.Tx, email string) (bool, error) {
+	return r.isEmailTaken(ctx, tx, email)
 }
 
-func (r Repository) isNicknameTaken(ctx context.Context, queryer queryer.Queryer, nickname string) (bool, error) {
+func (r Repository) isEmailTaken(ctx context.Context, queryer queryer.Queryer, email string) (bool, error) {
 	query := `
 SELECT EXISTS (SELECT 1
                FROM accounts
-               WHERE nickname = $1)
+               WHERE email = $1)
 `
 
 	var isTaken bool
 
 	err := queryer.GetContext(ctx, &isTaken, query,
-		nickname)
+		email)
 	if err != nil {
 		return false, werr.WrapES(errs.DatabaseFailedToExecuteQuery, err.Error())
 	}

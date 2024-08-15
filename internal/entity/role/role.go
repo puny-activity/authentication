@@ -8,14 +8,18 @@ type Role struct {
 }
 
 var (
-	Undefined = Role{localizationCode: "", name: "undefined"}
+	Undefined = Role{localizationCode: "RoleUndefined", name: "undefined"}
+	God       = Role{localizationCode: "RoleGod", name: "god"}
 	Admin     = Role{localizationCode: "RoleAdmin", name: "admin"}
 	User      = Role{localizationCode: "RoleUser", name: "user"}
+	Guest     = Role{localizationCode: "RoleGuest", name: "guest"}
 )
 
 var roleByName = map[string]Role{
+	God.name:   God,
 	Admin.name: Admin,
 	User.name:  User,
+	Guest.name: Guest,
 }
 
 func Parse(name string) (Role, error) {
@@ -27,12 +31,20 @@ func Parse(name string) (Role, error) {
 	return role, nil
 }
 
+func (e Role) IsGod() bool {
+	return e == God
+}
+
 func (e Role) IsAdmin() bool {
 	return e == Admin
 }
 
 func (e Role) IsUser() bool {
 	return e == User
+}
+
+func (e Role) IsGuest() bool {
+	return e == Guest
 }
 
 func (e Role) Code() string {

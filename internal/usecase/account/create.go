@@ -14,7 +14,6 @@ import (
 func (u *UseCase) SignUp(ctx context.Context, account account.ToCreate) error {
 	accountID := uuid.New()
 	account.ID = &accountID
-	account.Nickname = account.Username
 	account.CreatedAt = carbon.Now()
 
 	err := account.Validate()
@@ -23,12 +22,30 @@ func (u *UseCase) SignUp(ctx context.Context, account account.ToCreate) error {
 	}
 
 	err = u.txManager.Transaction(ctx, func(ctx context.Context, tx *sqlx.Tx) error {
-		isUsernameTaken, err := u.accountRepo.IsUsernameTakenTx(ctx, tx, account.Username)
+		isEmailTaken, err := u.accountRepo.IsEmailTakenTx(ctx, tx, account.Email)
 		if err != nil {
-			return werr.WrapSE("failed to check if username taken", err)
+			return werr.WrapSE("failed to check if email taken", err)
 		}
-		if isUsernameTaken {
-			return errs.UsernameAlreadyTaken
+		if isEmailTaken {
+			return errs.EmailAlreadyTaken
+		}
+
+		isNicknameTaken, err := u.accountRepo.IsNicknameTakenTx(ctx, tx, account.Nickname)
+		if err != nil {
+			return werr.WrapSE("failed to check if nickname taken", err)
+		}
+		if isNicknameTaken {
+			return errs.NicknameAlreadyTaken
+		}
+
+		accountsCount, err := u.accountRepo.AccountsCountTx(ctx, tx)
+		if err != nil {
+			return werr.WrapSE("failed to count accounts", err)
+		}
+		if accountsCount == 0 {
+			account.Role = role.God
+		} else {
+			account.Role = role.User
 		}
 
 		accountWithHashedPassword, err := account.HashPassword()
@@ -41,28 +58,12 @@ func (u *UseCase) SignUp(ctx context.Context, account account.ToCreate) error {
 			return werr.WrapSE("failed to create account", err)
 		}
 
-		accountsCount, err := u.accountRepo.AccountsCountTx(ctx, tx)
-		if err != nil {
-			return werr.WrapSE("failed to count accounts", err)
-		}
-		if accountsCount == 1 {
-			err = u.roleRepo.AssignTx(ctx, tx, *accountWithHashedPassword.ID, role.Admin)
-			if err != nil {
-				return werr.WrapSE("failed to assign admin role", err)
-			}
-		}
-
-		err = u.roleRepo.AssignTx(ctx, tx, *accountWithHashedPassword.ID, role.User)
-		if err != nil {
-			return werr.WrapSE("failed to assign user role", err)
-		}
-
 		return nil
 	})
 	if err != nil {
 		return err
 	}
 
-	u.log.Debug().Str("username", account.Username).Msg("account created")
+	u.log.Debug().Str("nickname", account.Nickname).Msg("account created")
 	return nil
 }

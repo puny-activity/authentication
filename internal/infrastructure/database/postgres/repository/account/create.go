@@ -10,12 +10,13 @@ import (
 )
 
 type createDBParameter struct {
-	ID             string  `db:"id"`
-	Username       string  `db:"username"`
-	Nickname       string  `db:"nickname"`
-	HashedPassword string  `db:"hashed_password"`
-	CreatedAt      string  `db:"created_at"`
-	LastOnline     *string `db:"last_online"`
+	ID           string  `db:"id"`
+	Email        string  `db:"email"`
+	Nickname     string  `db:"nickname"`
+	PasswordHash string  `db:"password_hash"`
+	RoleCode     string  `db:"role_code"`
+	CreatedAt    string  `db:"created_at"`
+	LastOnline   *string `db:"last_online"`
 }
 
 func (r Repository) Create(ctx context.Context, accountToCreate account.ToCreateWithHashedPassword) error {
@@ -28,17 +29,18 @@ func (r Repository) CreateTx(ctx context.Context, tx *sqlx.Tx, accountToCreate a
 
 func (r Repository) create(ctx context.Context, queryer queryer.Queryer, accountToCreate account.ToCreateWithHashedPassword) error {
 	query := `
-INSERT INTO accounts(id, username, nickname, hashed_password, created_at, last_online)
-VALUES (:id, :username, :nickname, :hashed_password, :created_at, :last_online)
+INSERT INTO accounts(id, email, nickname, password_hash, role_code, created_at, last_online)
+VALUES (:id, :email, :nickname, :password_hash, :role_code, :created_at, :last_online)
 `
 
 	parameter := createDBParameter{
-		ID:             accountToCreate.ID.String(),
-		Username:       accountToCreate.Username,
-		Nickname:       accountToCreate.Nickname,
-		HashedPassword: accountToCreate.HashedPassword,
-		CreatedAt:      accountToCreate.CreatedAt.ToDateTimeString(),
-		LastOnline:     nil,
+		ID:           accountToCreate.ID.String(),
+		Email:        accountToCreate.Email,
+		Nickname:     accountToCreate.Nickname,
+		PasswordHash: accountToCreate.PasswordHash,
+		RoleCode:     accountToCreate.Role.Name(),
+		CreatedAt:    accountToCreate.CreatedAt.ToDateTimeString(),
+		LastOnline:   nil,
 	}
 
 	_, err := queryer.NamedExecContext(ctx, query, parameter)

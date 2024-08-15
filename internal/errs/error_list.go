@@ -11,15 +11,16 @@ var (
 
 	// Request data
 	FailedToDecodeRequestBody = errors.New("failed to decode request body")
-	NotProvidedUsername       = errors.New("not provided username")
+	NotProvidedEmail          = errors.New("not provided email")
 	NotProvidedNickname       = errors.New("not provided nickname")
 	NotProvidedPassword       = errors.New("not provided password")
-	InvalidUsername           = errors.New("invalid username")
+	InvalidEmail              = errors.New("invalid email")
 	InvalidPassword           = errors.New("invalid password")
 	InvalidAPIVersion         = errors.New("invalid api version")
 
 	// Conflict
-	UsernameAlreadyTaken = errors.New("username already taken")
+	EmailAlreadyTaken    = errors.New("email already taken")
+	NicknameAlreadyTaken = errors.New("nickname already taken")
 
 	// Database
 	DatabaseFailedToExecuteQuery = errors.New("failed to execute query")
@@ -51,7 +52,7 @@ var errorList = []internalError{
 	},
 
 	{
-		error:            NotProvidedUsername,
+		error:            NotProvidedEmail,
 		localizationCode: "RDT-2",
 		httpStatusCode:   http.StatusBadRequest,
 	},
@@ -62,7 +63,7 @@ var errorList = []internalError{
 	},
 
 	{
-		error:            InvalidUsername,
+		error:            InvalidEmail,
 		localizationCode: "RDT-4",
 		httpStatusCode:   http.StatusBadRequest,
 	},
@@ -83,8 +84,14 @@ var errorList = []internalError{
 	},
 
 	{
-		error:            UsernameAlreadyTaken,
+		error:            EmailAlreadyTaken,
 		localizationCode: "CFL-1",
+		httpStatusCode:   http.StatusBadRequest,
+	},
+
+	{
+		error:            NicknameAlreadyTaken,
+		localizationCode: "CFL-2",
 		httpStatusCode:   http.StatusBadRequest,
 	},
 

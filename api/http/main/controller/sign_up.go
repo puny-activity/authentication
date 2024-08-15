@@ -20,8 +20,9 @@ func (c Controller) SignUp(w http.ResponseWriter, r *http.Request) error {
 }
 
 type signUpV1Request struct {
-	Username string `json:"username"`
-	Password string `json:"password"`
+	Email    string  `json:"email"`
+	Nickname *string `json:"nickname"`
+	Password string  `json:"password"`
 }
 
 func (c Controller) signUpV1(w http.ResponseWriter, r *http.Request) error {
@@ -32,9 +33,15 @@ func (c Controller) signUpV1(w http.ResponseWriter, r *http.Request) error {
 		return werr.WrapES(errs.FailedToDecodeRequestBody, err.Error())
 	}
 
+	nickname := signUpRequest.Email
+	if signUpRequest.Nickname != nil {
+		nickname = *signUpRequest.Nickname
+	}
+
 	accountToCreate := account.ToCreate{
 		User: account.User{
-			Username: signUpRequest.Username,
+			Email:    signUpRequest.Email,
+			Nickname: nickname,
 		},
 		Password: signUpRequest.Password,
 	}

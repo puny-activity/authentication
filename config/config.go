@@ -15,7 +15,7 @@ type Config struct {
 }
 
 type AppConfig struct {
-	Name                string `long:"name" env:"NAME" default:"authentication"`
+	Name                string `long:"name" env:"NAME" default:"authorization"`
 	Environment         string `long:"environment" env:"ENVIRONMENT" default:"local"`
 	RefreshToken        *Token `group:"Refresh token args" namespace:"refresh-token" env-namespace:"REFRESH_TOKEN" required:"true"`
 	AccessToken         *Token `group:"Access token args" namespace:"access-token" env-namespace:"ACCESS_TOKEN" required:"true"`

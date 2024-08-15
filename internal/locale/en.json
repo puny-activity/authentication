@@ -6,13 +6,13 @@
     "other": "Something went wrong"
   },
   "RDT-2": {
-    "other": "Username not provided"
+    "other": "Email not provided"
   },
   "RDT-3": {
     "other": "Password not provided"
   },
   "RDT-4": {
-    "other": "Invalid username"
+    "other": "Invalid email"
   },
   "RDT-5": {
     "other": "Invalid password"
@@ -24,7 +24,10 @@
     "other": "Something went wrong"
   },
   "CFL-1": {
-    "other": "Username already taken"
+    "other": "Email already taken"
+  },
+  "CFL-2": {
+    "other": "Nickname already taken"
   },
   "DTB-1": {
     "other": "Something went wrong"
@@ -35,11 +38,19 @@
   "ENT-1": {
     "other": "Something went wrong"
   },
-
+  "RoleUndefined": {
+    "other": "Undefined"
+  },
+  "RoleGod": {
+    "other": "God"
+  },
   "RoleAdmin": {
     "other": "Admin"
   },
   "RoleUser": {
     "other": "User"
+  },
+  "RoleGuest": {
+    "other": "Guest"
   }
 }

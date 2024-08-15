@@ -7,19 +7,20 @@ import (
 	"github.com/puny-activity/authentication/internal/errs"
 	"github.com/puny-activity/authentication/pkg/werr"
 	"golang.org/x/crypto/bcrypt"
+	"net/mail"
 	"strings"
 )
 
 type User struct {
 	ID        *uuid.UUID
-	Username  string
+	Email     string
 	Nickname  string
+	Role      role.Role
 	CreatedAt carbon.Carbon
 }
 
 type Account struct {
 	User
-	Roles      []role.Role
 	LastActive carbon.Carbon
 }
 
@@ -30,20 +31,21 @@ type ToCreate struct {
 
 type ToCreateWithHashedPassword struct {
 	User
-	HashedPassword string
+	PasswordHash string
 }
 
 func (e *User) Validate() error {
-	if len(e.Username) == 0 {
-		return errs.NotProvidedUsername
+	if len(e.Email) == 0 {
+		return errs.NotProvidedEmail
 	}
 
 	if len(e.Nickname) == 0 {
 		return errs.NotProvidedNickname
 	}
 
-	if strings.ContainsAny(e.Username, " \\/") {
-		return errs.InvalidUsername
+	_, err := mail.ParseAddress(e.Email)
+	if err != nil {
+		return werr.WrapES(errs.InvalidEmail, err.Error())
 	}
 
 	return nil
@@ -71,10 +73,10 @@ func (e *ToCreate) HashPassword() (ToCreateWithHashedPassword, error) {
 	if err != nil {
 		return ToCreateWithHashedPassword{}, werr.WrapSE("failed to generate hashed password", err)
 	}
-	hashedPassword := string(hashedBytes)
+	passwordHash := string(hashedBytes)
 
 	return ToCreateWithHashedPassword{
-		User:           e.User,
-		HashedPassword: hashedPassword,
+		User:         e.User,
+		PasswordHash: passwordHash,
 	}, nil
 }

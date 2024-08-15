@@ -3,7 +3,6 @@ package app
 import (
 	"github.com/puny-activity/authentication/internal/config"
 	accountrepo "github.com/puny-activity/authentication/internal/infrastructure/database/postgres/repository/account"
-	rolerepo "github.com/puny-activity/authentication/internal/infrastructure/database/postgres/repository/role"
 	accountuc "github.com/puny-activity/authentication/internal/usecase/account"
 	"github.com/puny-activity/authentication/pkg/database"
 	"github.com/puny-activity/authentication/pkg/txmanager"
@@ -30,9 +29,8 @@ func New(cfg config.Config, log *zerolog.Logger) *App {
 	txManager := txmanager.New(db.DB)
 
 	accountRepo := accountrepo.New(db.DB, txManager, log)
-	roleRepo := rolerepo.New(db.DB, txManager, log)
 
-	accountUseCase := accountuc.New(accountRepo, roleRepo, txManager, log)
+	accountUseCase := accountuc.New(accountRepo, txManager, log)
 
 	return &App{
 		AccountUseCase: accountUseCase,
