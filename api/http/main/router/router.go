@@ -34,8 +34,12 @@ func (r *Router) Setup() {
 	r.router.Group(func(router chi.Router) {
 		router.Use(r.middleware.AcceptLanguageMiddleware)
 
-		router.Route("/accounts", func(router chi.Router) {
-			router.Post("/sign-up", r.wrapper.WrapAnonymous(r.controller.SignUp))
+		router.Route("/sign-up", func(router chi.Router) {
+			router.Post("/", r.wrapper.WrapAnonymous(r.controller.SignUp))
+		})
+
+		router.Route("/sign-in", func(router chi.Router) {
+			router.Post("/", r.wrapper.WrapAnonymous(r.controller.SignIn))
 		})
 	})
 }

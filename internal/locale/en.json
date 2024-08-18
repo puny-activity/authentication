@@ -2,6 +2,9 @@
   "ATH-1": {
     "other": "You are not logged in"
   },
+  "ATH-2": {
+    "other": "Wrong password"
+  },
   "RDT-1": {
     "other": "Something went wrong"
   },
@@ -36,6 +39,9 @@
     "other": "Something went wrong"
   },
   "ENT-1": {
+    "other": "Something went wrong"
+  },
+  "ENT-2": {
     "other": "Something went wrong"
   },
   "RoleUndefined": {

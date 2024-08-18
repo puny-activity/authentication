@@ -8,6 +8,7 @@ import (
 var (
 	// Authentication
 	EmptyAccessToken = errors.New("empty access token")
+	WrongPassword    = errors.New("wrong password")
 
 	// Request data
 	FailedToDecodeRequestBody = errors.New("failed to decode request body")
@@ -26,6 +27,7 @@ var (
 	DatabaseFailedToExecuteQuery = errors.New("failed to execute query")
 
 	// Entities
+	DatabaseUndefinedID       = errors.New("undefined id")
 	DatabaseFailedToParseRole = errors.New("failed to parse role")
 
 	// Unexpected
@@ -42,6 +44,11 @@ var errorList = []internalError{
 	{
 		error:            EmptyAccessToken,
 		localizationCode: "ATH-1",
+		httpStatusCode:   http.StatusUnauthorized,
+	},
+	{
+		error:            WrongPassword,
+		localizationCode: "ATH-2",
 		httpStatusCode:   http.StatusUnauthorized,
 	},
 
@@ -88,7 +95,6 @@ var errorList = []internalError{
 		localizationCode: "CFL-1",
 		httpStatusCode:   http.StatusBadRequest,
 	},
-
 	{
 		error:            NicknameAlreadyTaken,
 		localizationCode: "CFL-2",
@@ -104,6 +110,11 @@ var errorList = []internalError{
 	{
 		error:            DatabaseFailedToParseRole,
 		localizationCode: "ENT-1",
+		httpStatusCode:   http.StatusInternalServerError,
+	},
+	{
+		error:            DatabaseUndefinedID,
+		localizationCode: "ENT-2",
 		httpStatusCode:   http.StatusInternalServerError,
 	},
 }

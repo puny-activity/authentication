@@ -2,7 +2,11 @@ package controller
 
 import (
 	"encoding/json"
+	"github.com/golang-module/carbon"
 	"github.com/puny-activity/authentication/internal/entity/account"
+	"github.com/puny-activity/authentication/internal/entity/account/credential/email"
+	"github.com/puny-activity/authentication/internal/entity/account/credential/password"
+	"github.com/puny-activity/authentication/internal/entity/role"
 	"github.com/puny-activity/authentication/internal/errs"
 	"github.com/puny-activity/authentication/pkg/base/headerbase"
 	"github.com/puny-activity/authentication/pkg/werr"
@@ -33,19 +37,29 @@ func (c Controller) signUpV1(w http.ResponseWriter, r *http.Request) error {
 		return werr.WrapES(errs.FailedToDecodeRequestBody, err.Error())
 	}
 
-	nickname := signUpRequest.Email
-	if signUpRequest.Nickname != nil {
-		nickname = *signUpRequest.Nickname
+	signUpEmail, err := email.New(signUpRequest.Email)
+	if err != nil {
+		return werr.WrapSE("failed to construct email", err)
 	}
 
-	accountToCreate := account.ToCreate{
-		User: account.User{
-			Email:    signUpRequest.Email,
-			Nickname: nickname,
-		},
-		Password: signUpRequest.Password,
+	signUpNickname := signUpEmail.String()
+	if signUpRequest.Nickname != nil {
+		signUpNickname = *signUpRequest.Nickname
 	}
-	err = c.app.AccountUseCase.SignUp(r.Context(), accountToCreate)
+
+	accountToCreate := account.Account{
+		Email:     signUpEmail,
+		Nickname:  signUpNickname,
+		Role:      role.Undefined,
+		CreatedAt: carbon.Now(),
+	}
+
+	passwordToCreate, err := password.New(signUpRequest.Password)
+	if err != nil {
+		return werr.WrapSE("failed to construct password", err)
+	}
+
+	err = c.app.AccountUseCase.Create(r.Context(), accountToCreate, passwordToCreate)
 	if err != nil {
 		return werr.WrapSE("failed to sign up", err)
 	}

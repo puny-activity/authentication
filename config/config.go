@@ -8,10 +8,19 @@ import (
 )
 
 type Config struct {
-	App    *AppConfig    `group:"App args" namespace:"app" env-namespace:"APP" required:"true"`
 	Logger *LoggerConfig `group:"Logger args" namespace:"logger" env-namespace:"LOGGER" required:"true"`
-	DB     *DBConfig     `group:"Db args" namespace:"database" env-namespace:"DATABASE" required:"true"`
 	HTTP   *HTTPConfig   `group:"Http args" namespace:"http" env-namespace:"HTTP" required:"true"`
+	App    *AppConfig    `group:"App args" namespace:"app" env-namespace:"APP" required:"true"`
+	DB     *DBConfig     `group:"Db args" namespace:"database" env-namespace:"DATABASE" required:"true"`
+}
+
+type LoggerConfig struct {
+	Level string `long:"level" env:"LEVEL" default:"info"`
+}
+
+type HTTPConfig struct {
+	Host string `long:"host" env:"HOST" required:"true"`
+	Port string `long:"port" env:"PORT" required:"true"`
 }
 
 type AppConfig struct {
@@ -23,27 +32,35 @@ type AppConfig struct {
 }
 
 type Token struct {
-	SecretKey      string `long:"secret-key" env:"SECRET_KEY" required:"true"`
-	DurationSecond int    `long:"duration" env:"DURATION" required:"true"`
+	SecretKeyValue string `long:"secret-key" env:"SECRET_KEY" required:"true"`
+	TTLSecondValue int    `long:"ttl-second" env:"TTL_SECOND" required:"true"`
 }
 
-type LoggerConfig struct {
-	Level string `long:"level" env:"LEVEL" default:"info"`
+func (c *Token) SecretKey() string {
+	return c.SecretKeyValue
+}
+
+func (c *Token) TTLSecond() int {
+	return c.TTLSecondValue
 }
 
 type DBConfig struct {
-	DatabaseName  string `long:"database" env:"DATABASE" required:"true"`
 	Host          string `long:"host" env:"HOST" required:"true"`
 	Port          int    `long:"port" env:"PORT" required:"true"`
 	Name          string `long:"name" env:"NAME" required:"true"`
 	User          string `long:"user" env:"USER" required:"true"`
 	Password      string `long:"password" env:"PASSWORD" required:"true"`
-	MigrationPath string `long:"migration-path" env:"MIGRATION_PATH" default:"internal/infrastructure/database/postgres/migration"`
+	MigrationPath string `long:"migration-path" env:"MIGRATION_PATH" default:"migration"`
 }
 
-type HTTPConfig struct {
-	Host string `long:"host" env:"HOST" required:"true"`
-	Port string `long:"port" env:"PORT" required:"true"`
+func (c *DBConfig) ConnectionString() string {
+	return fmt.Sprintf(
+		"host=%s port=%d user=%s dbname=%s password=%s sslmode=disable default_query_exec_mode=cache_describe",
+		c.Host, c.Port, c.User, c.Name, c.Password)
+}
+
+func (c *DBConfig) MigrationsPath() string {
+	return c.MigrationPath
 }
 
 func Parse() (*Config, error) {
@@ -61,25 +78,6 @@ func Parse() (*Config, error) {
 	}
 
 	return &config, nil
-}
-
-func (c *Config) Database() string {
-	return c.DB.DatabaseName
-}
-
-func (c *Config) ConnectionString() string {
-	switch c.DB.DatabaseName {
-	case "postgres":
-		return fmt.Sprintf(
-			"host=%s port=%d user=%s dbname=%s password=%s sslmode=disable default_query_exec_mode=cache_describe",
-			c.DB.Host, c.DB.Port, c.DB.User, c.DB.Name, c.DB.Password)
-	default:
-		return ""
-	}
-}
-
-func (c *Config) MigrationsPath() string {
-	return c.DB.MigrationPath
 }
 
 func (c *Config) IsProduction() bool {

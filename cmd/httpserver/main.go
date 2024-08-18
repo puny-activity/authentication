@@ -34,6 +34,8 @@ func main() {
 		panic(err)
 	}
 
+	log.Warn().Any("cfg", cfg).Msg("cfg")
+
 	application := app.New(cfg, log)
 	defer func(application *app.App) {
 		err := application.Close()
@@ -45,7 +47,7 @@ func main() {
 	writer := httpresp.NewWriter()
 
 	controllerHealthCheck := controllerhealth.New(writer, log)
-	controllerMain := controller.New(application, writer, log)
+	controllerMain := controller.New(cfg, application, writer, log)
 
 	chiMux := chimux.New()
 

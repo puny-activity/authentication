@@ -9,7 +9,6 @@ import (
 )
 
 type Config interface {
-	Database() string
 	ConnectionString() string
 	MigrationsPath() string
 }
@@ -20,7 +19,7 @@ type Database struct {
 }
 
 func New(cfg Config) (*Database, error) {
-	driverName, err := driverByDatabase(cfg.Database())
+	driverName, err := driverByDatabase("postgres")
 	if err != nil {
 		return nil, werr.WrapSE("failed to get driver by database", err)
 	}

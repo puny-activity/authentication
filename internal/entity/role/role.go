@@ -22,7 +22,7 @@ var roleByName = map[string]Role{
 	Guest.name: Guest,
 }
 
-func Parse(name string) (Role, error) {
+func New(name string) (Role, error) {
 	role, ok := roleByName[name]
 	if !ok {
 		return Undefined, errors.New("unknown role")
