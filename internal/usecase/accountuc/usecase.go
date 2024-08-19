@@ -1,4 +1,4 @@
-package useruc
+package accountuc
 
 import (
 	"context"
@@ -47,14 +47,17 @@ type accountRepository interface {
 	CountTx(ctx context.Context, tx *sqlx.Tx) (int, error)
 	GetByEmailTx(ctx context.Context, tx *sqlx.Tx, targetEmail email.Email) (account.Account, error)
 	GetHashedPasswordTx(ctx context.Context, tx *sqlx.Tx, accountID account.ID) (password.Hashed, error)
+	GetTx(ctx context.Context, tx *sqlx.Tx, accountID account.ID) (account.Account, error)
 }
 
 type deviceRepository interface {
 	DeleteIfExistsByFingerprintTx(ctx context.Context, tx *sqlx.Tx, fingerprint string) error
 	CreateTx(ctx context.Context, tx *sqlx.Tx, accountID account.ID, deviceToCreate device.Device) error
+	GetTx(ctx context.Context, tx *sqlx.Tx, deviceID device.ID) (device.Device, error)
 }
 
 type refreshTokenRepository interface {
+	DeleteTx(ctx context.Context, tx *sqlx.Tx, refreshTokenID refreshtoken.ID) error
 	DeleteIfExistsByDeviceFingerprintTx(ctx context.Context, tx *sqlx.Tx, fingerprint string) error
 	CreateTx(ctx context.Context, tx *sqlx.Tx, deviceID device.ID, baseToken refreshtoken.Base) error
 }
@@ -66,9 +69,10 @@ type loginAttemptsRepository interface {
 type refreshTokenService interface {
 	Generate(payload refreshtoken.Payload) (refreshtoken.RefreshToken, error)
 	Encode(token refreshtoken.RefreshToken) (string, error)
+	Decode(tokenString string) (refreshtoken.RefreshToken, error)
 }
 
 type accessTokenService interface {
-	Generate(payload accesstoken.Payload) (accesstoken.AccessToken, error)
+	Generate(parentRefreshTokenID refreshtoken.ID, payload accesstoken.Payload) (accesstoken.AccessToken, error)
 	Encode(token accesstoken.AccessToken) (string, error)
 }

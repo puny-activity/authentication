@@ -8,6 +8,7 @@ import (
 	"github.com/puny-activity/authentication/internal/entity/account/credential/email"
 	"github.com/puny-activity/authentication/internal/entity/device"
 	"github.com/puny-activity/authentication/internal/entity/role"
+	"github.com/puny-activity/authentication/internal/entity/token/refreshtoken"
 	"github.com/puny-activity/authentication/pkg/util"
 )
 
@@ -19,9 +20,10 @@ type AccessToken struct {
 }
 
 type Base struct {
-	ID        *ID
-	IssuedAt  carbon.Carbon
-	ExpiresAt carbon.Carbon
+	ID             *ID
+	IssuedAt       carbon.Carbon
+	ExpiresAt      carbon.Carbon
+	RefreshTokenID refreshtoken.ID
 }
 
 type Payload struct {

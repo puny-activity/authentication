@@ -12,6 +12,7 @@ func (s Service) Encode(token accesstoken.AccessToken) (string, error) {
 		"jti":               uuid.UUID(*token.Base.ID),
 		"iat":               token.Base.IssuedAt.ToStdTime().Unix(),
 		"exp":               token.Base.ExpiresAt.ToStdTime().Unix(),
+		"refreshTokenId":    uuid.UUID(token.RefreshTokenID),
 		"sub":               uuid.UUID(token.Payload.AccountID),
 		"deviceId":          uuid.UUID(token.Payload.DeviceID),
 		"role":              token.Payload.Role.Name(),

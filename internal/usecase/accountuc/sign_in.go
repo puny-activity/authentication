@@ -1,4 +1,4 @@
-package useruc
+package accountuc
 
 import (
 	"context"
@@ -73,7 +73,7 @@ func (u *UseCase) SignIn(ctx context.Context, credentials credential.Credential,
 		if err != nil {
 			return werr.WrapSE("failed to create access token payload", err)
 		}
-		accessToken, err := u.accessTokenService.Generate(accessTokenPayload)
+		accessToken, err := u.accessTokenService.Generate(*refreshToken.ID, accessTokenPayload)
 		if err != nil {
 			return werr.WrapSE("failed to generate access token", err)
 		}

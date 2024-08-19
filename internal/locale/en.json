@@ -5,6 +5,12 @@
   "ATH-2": {
     "other": "Wrong password"
   },
+  "ATH-3": {
+    "other": "Something went wrong"
+  },
+  "ATH-4": {
+    "other": "Something went wrong"
+  },
   "RDT-1": {
     "other": "Something went wrong"
   },
@@ -42,6 +48,9 @@
     "other": "Something went wrong"
   },
   "ENT-2": {
+    "other": "Something went wrong"
+  },
+  "ENT-3": {
     "other": "Something went wrong"
   },
   "RoleUndefined": {

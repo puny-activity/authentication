@@ -41,5 +41,9 @@ func (r *Router) Setup() {
 		router.Route("/sign-in", func(router chi.Router) {
 			router.Post("/", r.wrapper.WrapAnonymous(r.controller.SignIn))
 		})
+
+		router.Route("/refresh", func(router chi.Router) {
+			router.Post("/", r.wrapper.WrapAnonymous(r.controller.Refresh))
+		})
 	})
 }

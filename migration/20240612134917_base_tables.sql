@@ -24,7 +24,7 @@ CREATE TABLE refresh_tokens
     id         UUID PRIMARY KEY,
     device_id  UUID REFERENCES devices (id) NOT NULL,
     issued_at  TIMESTAMP                    NOT NULL,
-    expires_at TIMESTAMP                    NOT NULL
+    expires_at TIMESTAMP                    NOT NULL,
 );
 
 CREATE TABLE login_attempts

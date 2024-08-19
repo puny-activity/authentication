@@ -7,8 +7,10 @@ import (
 
 var (
 	// Authentication
-	EmptyAccessToken = errors.New("empty access token")
-	WrongPassword    = errors.New("wrong password")
+	EmptyAccessToken    = errors.New("empty access token")
+	WrongPassword       = errors.New("wrong password")
+	EmptyRefreshToken   = errors.New("empty refresh token")
+	InvalidRefreshToken = errors.New("invalid access token")
 
 	// Request data
 	FailedToDecodeRequestBody = errors.New("failed to decode request body")
@@ -29,6 +31,7 @@ var (
 	// Entities
 	DatabaseUndefinedID       = errors.New("undefined id")
 	DatabaseFailedToParseRole = errors.New("failed to parse role")
+	RefreshTokenNotFound      = errors.New("refresh token not found")
 
 	// Unexpected
 	Unexpected = errors.New("unexpected error")
@@ -49,6 +52,16 @@ var errorList = []internalError{
 	{
 		error:            WrongPassword,
 		localizationCode: "ATH-2",
+		httpStatusCode:   http.StatusUnauthorized,
+	},
+	{
+		error:            EmptyRefreshToken,
+		localizationCode: "ATH-3",
+		httpStatusCode:   http.StatusUnauthorized,
+	},
+	{
+		error:            InvalidRefreshToken,
+		localizationCode: "ATH-4",
 		httpStatusCode:   http.StatusUnauthorized,
 	},
 
@@ -115,6 +128,11 @@ var errorList = []internalError{
 	{
 		error:            DatabaseUndefinedID,
 		localizationCode: "ENT-2",
+		httpStatusCode:   http.StatusInternalServerError,
+	},
+	{
+		error:            RefreshTokenNotFound,
+		localizationCode: "ENT-3",
 		httpStatusCode:   http.StatusInternalServerError,
 	},
 }

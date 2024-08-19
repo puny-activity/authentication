@@ -8,7 +8,7 @@ import (
 	"github.com/puny-activity/authentication/internal/infrastructure/repository/refreshtokenrepo"
 	"github.com/puny-activity/authentication/internal/infrastructure/service/accesstokenservice"
 	"github.com/puny-activity/authentication/internal/infrastructure/service/refreshtokenservice"
-	accountuc "github.com/puny-activity/authentication/internal/usecase/useruc"
+	accountuc "github.com/puny-activity/authentication/internal/usecase/accountuc"
 	"github.com/puny-activity/authentication/pkg/database"
 	"github.com/puny-activity/authentication/pkg/txmanager"
 	"github.com/puny-activity/authentication/pkg/werr"

@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"github.com/golang-module/carbon"
 	"github.com/nicksnyder/go-i18n/v2/i18n"
 	controllerhealth "github.com/puny-activity/authentication/api/http/healthcheck/controller"
 	routerhealth "github.com/puny-activity/authentication/api/http/healthcheck/router"
@@ -34,7 +35,7 @@ func main() {
 		panic(err)
 	}
 
-	log.Warn().Any("cfg", cfg).Msg("cfg")
+	carbon.SetTimezone("UTC")
 
 	application := app.New(cfg, log)
 	defer func(application *app.App) {
