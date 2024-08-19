@@ -20,6 +20,9 @@ func (u *UseCase) Refresh(ctx context.Context, oldRefreshTokenString string) (to
 
 	err = u.txManager.Transaction(ctx, func(ctx context.Context, tx *sqlx.Tx) error {
 		err := u.refreshTokenRepo.DeleteTx(ctx, tx, *oldRefreshToken.ID)
+		if err != nil {
+			return werr.WrapSE("failed to delete old refresh token", err)
+		}
 
 		targetAccount, err := u.accountRepo.GetTx(ctx, tx, oldRefreshToken.AccountID)
 		if err != nil {

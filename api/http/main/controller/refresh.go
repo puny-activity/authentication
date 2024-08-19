@@ -2,6 +2,7 @@ package controller
 
 import (
 	"encoding/json"
+	"github.com/golang-module/carbon"
 	"github.com/puny-activity/authentication/internal/errs"
 	"github.com/puny-activity/authentication/pkg/base/headerbase"
 	"github.com/puny-activity/authentication/pkg/werr"
@@ -57,13 +58,13 @@ func (c Controller) refreshV1(w http.ResponseWriter, r *http.Request) error {
 		RefreshToken: tokenPair.RefreshToken,
 	}
 
-	//http.SetCookie(w, &http.Cookie{
-	//	Name:     "refresh_token",
-	//	Value:    tokenPair.RefreshToken,
-	//	Expires:  carbon.Now().AddSeconds(c.cfg.App.RefreshToken.TTLSecond()).ToStdTime(),
-	//	HttpOnly: true,
-	//	Secure:   true,
-	//})
+	http.SetCookie(w, &http.Cookie{
+		Name:     "refresh_token",
+		Value:    tokenPair.RefreshToken,
+		Expires:  carbon.Now().AddSeconds(c.cfg.App.RefreshToken.TTLSecond()).ToStdTime(),
+		HttpOnly: true,
+		Secure:   true,
+	})
 
 	return c.responseWriter.Write(w, http.StatusCreated, response)
 }
