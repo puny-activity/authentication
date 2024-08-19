@@ -60,6 +60,7 @@ type refreshTokenRepository interface {
 	DeleteTx(ctx context.Context, tx *sqlx.Tx, refreshTokenID refreshtoken.ID) error
 	DeleteIfExistsByDeviceFingerprintTx(ctx context.Context, tx *sqlx.Tx, fingerprint string) error
 	CreateTx(ctx context.Context, tx *sqlx.Tx, deviceID device.ID, baseToken refreshtoken.Base) error
+	Delete(ctx context.Context, refreshTokenID refreshtoken.ID) error
 }
 
 type loginAttemptsRepository interface {

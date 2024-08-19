@@ -81,5 +81,5 @@ func (c Controller) signInV1(w http.ResponseWriter, r *http.Request) error {
 		Secure:   true,
 	})
 
-	return c.responseWriter.Write(w, http.StatusCreated, response)
+	return c.responseWriter.Write(w, http.StatusOK, response)
 }

@@ -45,5 +45,9 @@ func (r *Router) Setup() {
 		router.Route("/refresh", func(router chi.Router) {
 			router.Post("/", r.wrapper.WrapAnonymous(r.controller.Refresh))
 		})
+
+		router.Route("/sign-out", func(router chi.Router) {
+			router.Post("/", r.wrapper.WrapAnonymous(r.controller.SignOut))
+		})
 	})
 }

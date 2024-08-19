@@ -9,26 +9,26 @@ import (
 	"net/http"
 )
 
-func (c Controller) Refresh(w http.ResponseWriter, r *http.Request) error {
+func (c Controller) SignOut(w http.ResponseWriter, r *http.Request) error {
 	version := r.Header.Get(headerbase.APIVersion)
 	switch version {
 	case "1":
-		return c.refreshV1(w, r)
+		return c.signOutV1(w, r)
 	default:
 		return errs.InvalidAPIVersion
 	}
 }
 
-type refreshV1Request struct {
+type signOutV1Request struct {
 	RefreshToken *string `json:"refreshToken"`
 }
 
-type refreshV1Response struct {
+type signOutV1Response struct {
 	AccessToken  string `json:"accessToken"`
 	RefreshToken string `json:"refreshToken"`
 }
 
-func (c Controller) refreshV1(w http.ResponseWriter, r *http.Request) error {
+func (c Controller) signOutV1(w http.ResponseWriter, r *http.Request) error {
 	var refreshToken *string = nil
 	refreshTokenFromCookie, err := r.Cookie("refresh_token")
 	if err == nil {
@@ -48,23 +48,18 @@ func (c Controller) refreshV1(w http.ResponseWriter, r *http.Request) error {
 		return errs.EmptyRefreshToken
 	}
 
-	tokenPair, err := c.app.AccountUseCase.Refresh(r.Context(), *refreshToken)
+	err = c.app.AccountUseCase.SignOut(r.Context(), *refreshToken)
 	if err != nil {
 		return werr.WrapSE("failed to sign up", err)
 	}
 
-	response := refreshV1Response{
-		AccessToken:  tokenPair.AccessToken,
-		RefreshToken: tokenPair.RefreshToken,
-	}
-
 	http.SetCookie(w, &http.Cookie{
 		Name:     "refresh_token",
-		Value:    tokenPair.RefreshToken,
-		Expires:  carbon.Now().AddSeconds(c.cfg.App.RefreshToken.TTLSecond()).ToStdTime(),
+		Value:    "",
+		Expires:  carbon.Now().SubHour().ToStdTime(),
 		HttpOnly: true,
 		Secure:   true,
 	})
 
-	return c.responseWriter.Write(w, http.StatusOK, response)
+	return c.responseWriter.Write(w, http.StatusOK, nil)
 }
